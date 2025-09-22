@@ -2,10 +2,11 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>Cadastrar Usuário</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastrar Usuario</title>
 </head>
 <body>
-    <h1>Cadastrar Usuário</h1>
+    <h1>Cadastrar Usuario</h1>
 
     <form method="post" action="">
         Nome: <input type="text" name="nome"><br><br>
@@ -23,8 +24,9 @@
         $linha = $nome . ";" . $email . ";" . $senha . "\n";
         file_put_contents("../usuarios.txt", $linha, FILE_APPEND);
 
-        echo "<p>Usuário cadastrado com sucesso!</p>";
+        echo "<p>Usuario cadastrado com sucesso!</p>";
     }
     ?>
+    <p><a href="../index.php"> inicio </a></p>
 </body>
 </html>
