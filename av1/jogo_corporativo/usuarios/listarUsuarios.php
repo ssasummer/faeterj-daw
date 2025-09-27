@@ -7,7 +7,7 @@
     <link rel = "stylesheet" href = "../style.css">
 </head>
 <body>
-    <div>
+    <div id="diferenciadaDiv">
         <h1>Lista de Usuarios</h1>
         <?php
             $arquivo = "../usuarios.txt";
