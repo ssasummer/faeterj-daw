@@ -7,7 +7,7 @@
     <link rel = "stylesheet" href = "../style.css">
 </head>
 <body>
-    <div>
+    <div id="diferenciadaDiv">
         <h1>Lista de Perguntas</h1>
         <?php
             if (file_exists("../perguntas.txt")) {
