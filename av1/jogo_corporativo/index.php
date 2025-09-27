@@ -10,14 +10,14 @@
 
     <h2>Usuários</h2>
     <?php
-        echo "<a href='usuarios/cadastrarUsuario.php'>Cadastrar Usuário</a><br>";
-        echo "<a href='usuarios/listarUsuarios.php'>Listar Usuários</a><br>";
+        echo "<a href='usuarios/cadastrarUsuario.php'><h5>Cadastrar Usuário</h5></a>";
+        echo "<a href='usuarios/listarUsuarios.php'><h5>Listar Usuários</h5></a>";
     ?>
 
     <h2>Perguntas</h2>
     <?php
-        echo "<a href='perguntas/cadastrarPergunta.php'>Cadastrar Pergunta</a><br>";
-        echo "<a href='perguntas/listarPerguntas.php'>Listar Perguntas</a><br>";
+        echo "<a href='perguntas/cadastrarPergunta.php'><h5>Cadastrar Pergunta</h5></a>";
+        echo "<a href='perguntas/listarPerguntas.php'><h5>Listar Perguntas</h5></a>";
     ?>
 </body>
 </html>
