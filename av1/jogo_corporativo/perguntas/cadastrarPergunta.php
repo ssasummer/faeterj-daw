@@ -9,7 +9,6 @@
 <body>
         <div>
             <h1>Cadastrar Pergunta</h1>
-        
             <form method="post" action="">
                 Texto da Pergunta: <input type="text" name="pergunta"><br><br>
                 Tipo:
