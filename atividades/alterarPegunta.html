@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Alterar Pergunta</title>
+  <script>
+    function carregarPergunta() {
+      const params = new URLSearchParams(window.location.search);
+      const id = params.get("id");
+
+      if (!id) {
+        document.getElementById("msg").innerHTML = "ID da pergunta não informado.";
+        return;
+      }
+
+      const xmlhttp = new XMLHttpRequest();
+      xmlhttp.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+          try {
+            const p = JSON.parse(this.responseText);
+            document.getElementById("pergunta").value = p.pergunta || "";
+            document.getElementById("respostas").value = p.respostas || "";
+          } catch (e) {
+            document.getElementById("msg").innerHTML = "Erro ao processar os dados da pergunta.";
+          }
+        }
+      };
+      xmlhttp.open("GET", "../perguntas/listarUmaPergunta.php?id=" + id, true);
+      xmlhttp.send();
+    }
+
+    function alterarPergunta() {
+      const params = new URLSearchParams(window.location.search);
+      const id = params.get("id");
+      const pergunta = document.getElementById("pergunta").value;
+      const respostas = document.getElementById("respostas").value;
+
+      const msgErro = validarForm(pergunta, respostas);
+      if (msgErro !== "") {
+        document.getElementById("msg").innerHTML = msgErro;
+        return;
+      }
+
+      const xmlhttp = new XMLHttpRequest();
+      xmlhttp.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+          document.getElementById("msg").innerHTML = this.responseText;
+        }
+      };
+
+      xmlhttp.open("POST", "../perguntas/alterarPergunta.php", true);
+      xmlhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+      xmlhttp.send(JSON.stringify({ id, pergunta, respostas }));
+    }
+
+    function validarForm(pergunta, respostas) {
+      let msg = "";
+      if (pergunta.trim() === "") msg += "'pergunta' não preenchida.<br>";
+      if (respostas.trim() === "") msg += "'respostas' não preenchida.<br>";
+      return msg;
+    }
+
+    window.onload = carregarPergunta;
+  </script>
+</head>
+<body>
+  <h1>Alterar Pergunta</h1>
+  <a href="listarPerguntas.html">Listar Perguntas</a><br>
+  <a href="cadastrarPergunta.html">Cadastrar Pergunta</a><br>
+  <a href="alterarPergunta.html">Alterar Pergunta</a><br>
+  <a href="excluirPergunta.html">Excluir Pergunta</a><br>
+  <br>
+
+  <form id="formAlterar">
+    Pergunta:<br>
+    <input type="text" id="pergunta"><br><br>
+    Respostas:<br>
+    <textarea id="respostas"></textarea><br><br>
+    <input type="button" value="Salvar Alterações" onclick="alterarPergunta();">
+  </form>
+
+  <p id="msg"></p>
+</body>
+</html>
+
