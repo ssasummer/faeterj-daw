@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Alterar Pergunta</title>
+</head>
+<body>
+  <h1>Alterar Pergunta</h1>
+
+  <p id="msg" class="small"></p>
+
+  <form id="formAlterar">
+    <label for="codigo">Código (id)</label><br>
+    <input type="text" id="codigo" name="id" readonly><br><br>
+
+    <label for="pergunta">Pergunta</label><br>
+    <input type="text" id="pergunta" name="pergunta" required><br><br>
+
+    <label for="resposta">Resposta</label><br>
+    <textarea id="resposta" name="resposta" required></textarea><br><br>
+
+    <button type="submit">salvar Alterações</button>
+  </form>
+
+  <p id="mensagem"></p>
+
+  <script>
+
+    document.addEventListener('DOMContentLoaded', function() {
+      carregarPergunta();
+
+      document.getElementById('formAlterar').addEventListener('submit', function(e) {
+        e.preventDefault();
+        salvarAlteracao();
+      });
+    });
+
+    function carregarPergunta() {
+      const params = new URLSearchParams(window.location.search);
+      const id = params.get("id");
+      const msg = document.getElementById('msg');
+      if (!id) {
+        msg.textContent = "ID da pergunta não informado na URL. Use ?id=123";
+        return;
+      }
+      msg.textContent = "Carregando pergunta...";
+      document.getElementById('codigo').value = id;
+
+      fetch(`../perguntas/listarUmaPergunta.php?id=${encodeURIComponent(id)}`)
+        .then(response => {
+          if (!response.ok) throw new Error('Erro na requisição: ' + response.status);
+          return response.json();
+        })
+        .then(data => {
+          if (data.error) {
+            msg.textContent = 'Erro: ' + data.error;
+            return;
+          }
+          document.getElementById('pergunta').value = data.pergunta ?? '';
+          document.getElementById('resposta').value = data.resposta ?? '';
+          msg.textContent = '';
+        })
+        .catch(err => {
+          msg.textContent = 'Falha ao carregar: ' + err.message;
+        });
+    }
+
+    function salvarAlteracao() {
+      const id = document.getElementById('codigo').value;
+      const pergunta = document.getElementById('pergunta').value.trim();
+      const resposta = document.getElementById('resposta').value.trim();
+      const mensagem = document.getElementById('mensagem');
+
+      if (!id) return mensagem.textContent = 'ID ausente.';
+      if (!pergunta || !resposta) return mensagem.textContent = 'Preencha pergunta e resposta.';
+
+      mensagem.textContent = 'Enviando alteração...';
+
+      const formData = new FormData();
+      formData.append('id', id);
+      formData.append('pergunta', pergunta);
+      formData.append('resposta', resposta);
+
+      fetch('../perguntas/salvarPergunta.php', {
+        method: 'POST',
+        body: formData
+      })
+      .then(response => {
+        if (!response.ok) throw new Error('Status ' + response.status);
+        return response.json();
+      })
+      .then(data => {
+        if (data.success) {
+          mensagem.textContent = 'Pergunta atualizada.';
+        } else {
+          mensagem.textContent = 'Erro ao salvar: ' + (data.message || 'erro desconhecido');
+        }
+      })
+      .catch(err => {
+        mensagem.textContent = 'Falha ao salvar: ' + err.message;
+      });
+    }
+  </script>
+</body>
+</html>
