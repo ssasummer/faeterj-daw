@@ -2,7 +2,7 @@
 $servidor = "localhost";
 $username = "root";
 $senha = "";
-$database = "faeterj3dawmanha";
+$database = "jogo_corporativo";
 
 $conn = new mysqli($servidor, $username, $senha, $database);
 
