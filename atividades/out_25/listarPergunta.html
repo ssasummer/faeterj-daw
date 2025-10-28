@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Listar Perguntas</title>
+    <script>
+        function listar() {
+            let x = new XMLHttpRequest();
+            x.onreadystatechange = function() {
+                if (this.readyState == 4 && this.status == 200) {
+                    let dados = JSON.parse(this.responseText);
+                    let tabela = "<table border='1'><tr><th>ID</th><th>Pergunta</th><th>Tipo</th><th>Respostas</th></tr>";
+                    for (let i = 0; i < dados.length; i++) {
+                        tabela += "<tr>" +
+                            "<td>" + dados[i].id + "</td>" +
+                            "<td>" + dados[i].pergunta + "</td>" +
+                            "<td>" + dados[i].tipo + "</td>" +
+                            "<td>" + dados[i].respostas + "</td>" +
+                            "</tr>";
+                    }
+                    tabela += "</table>";
+                    document.getElementById("resultado").innerHTML = tabela;
+                }
+            }
+            x.open("GET", "listarPerguntas.php");
+            x.send();
+        }
+    </script>
+</head>
+<body onload="listar()">
+
+<h1>Listar Perguntas</h1>
+
+<div id="resultado"></div>
+
+</body>
+</html>
