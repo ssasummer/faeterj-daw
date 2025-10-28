@@ -1,19 +1,23 @@
 <?php
-header('Content-Type: application/json');
-
-$caminho = "perguntas.json";
 $dados = json_decode(file_get_contents("php://input"), true);
 
-$pergunta = [
-    "pergunta" => $dados["pergunta"],
-    "tipo" => $dados["tipo"],
-    "respostas" => $dados["respostas"]
-];
+$pergunta = $dados["pergunta"];
+$tipo = $dados["tipo"];
+$respostas = $dados["respostas"];
 
-$lista = json_decode(file_get_contents($caminho), true);
-$lista[] = $pergunta;
+$registro = ["pergunta" => $pergunta, "tipo" => $tipo, "respostas" => $respostas];
 
-file_put_contents($caminho, json_encode($lista, JSON_PRETTY_PRINT));
+$arquivo = "../perguntas.json";
 
-echo json_encode(["mensagem" => "Pergunta cadastrada."]);
-?>
+if (file_exists($arquivo)) {
+    $conteudo = json_decode(file_get_contents($arquivo), true);
+} else {
+    $conteudo = [];
+}
+
+$conteudo[] = $registro;
+
+file_put_contents($arquivo, json_encode($conteudo, JSON_PRETTY_PRINT));
+
+echo "Pergunta cadastrada com sucesso.";
+
