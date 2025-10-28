@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Buscar Pergunta</title>
+    <script>
+        function buscar() {
+            let id = document.getElementById("idBusca").value;
+            let x = new XMLHttpRequest();
+            x.onreadystatechange = function() {
+                if (this.readyState == 4 && this.status == 200) {
+                    let obj = JSON.parse(this.responseText);
+                    if (obj.encontrado === false) {
+                        document.getElementById("resultado").innerHTML = "Pergunta não encontrada";
+                    } else {
+                        let texto = 
+                        "ID: " + obj.id + "<br>" +
+                        "Pergunta: " + obj.pergunta + "<br>" +
+                        "Tipo: " + obj.tipo + "<br>" +
+                        "Respostas: " + obj.respostas;
+                        document.getElementById("resultado").innerHTML = texto;
+                    }
+                }
+            }
+            x.open("GET", "buscarPergunta.php?id=" + id);
+            x.send();
+        }
+    </script>
+</head>
+<body>
+
+<h1>Buscar Pergunta</h1>
+
+Digite o ID:<br>
+<input type="number" id="idBusca">
+<button onclick="buscar()">Buscar</button>
+
+<p id="resultado"></p>
+
+</body>
+</html>
