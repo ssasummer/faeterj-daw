@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Alterar Pergunta</title>
+</head>
+<body>
+
+<input id="id" placeholder="Código da pergunta">
+<button onclick="carregar()">Carregar</button>
+
+<div id="form" style="display:none;">
+<input id="pergunta" placeholder="Texto da pergunta">
+<input id="tipo" placeholder="Tipo (1 ou 2)">
+<input id="assunto" placeholder="Assunto">
+<button onclick="salvar()">Salvar</button>
+</div>
+
+<script>
+function carregar(){
+    var id = document.getElementById("id").value;
+    var x = new XMLHttpRequest();
+    x.open("GET","buscarPergunta.php?id="+id);
+    x.onload = function(){
+        var p = JSON.parse(x.responseText);
+        if(p.encontrado === false){ alert("Não encontrada"); return; }
+        document.getElementById("form").style.display="block";
+        document.getElementById("pergunta").value=p.pergunta;
+        document.getElementById("tipo").value=p.tipo;
+        document.getElementById("assunto").value=p.assunto;
+    }
+    x.send();
+}
+
+function salvar(){
+    var id = document.getElementById("id").value;
+    var pergunta = document.getElementById("pergunta").value;
+    var tipo = document.getElementById("tipo").value;
+    var assunto = document.getElementById("assunto").value;
+
+    var x = new XMLHttpRequest();
+    x.open("POST","alterarPergunta.php");
+    x.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
+    x.onload = function(){
+        if(x.responseText.includes("OK")) alert("Alterada");
+        else alert("Erro");
+    }
+    x.send("id="+id+"&pergunta="+encodeURIComponent(pergunta)+"&tipo="+tipo+"&assunto="+encodeURIComponent(assunto));
+}
+</script>
+
+</body>
+</html>
