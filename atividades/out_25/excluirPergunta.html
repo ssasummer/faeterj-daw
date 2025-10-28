@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Excluir Pergunta</title>
+</head>
+<body>
+
+<h1>Excluir Pergunta</h1>
+
+ID da Pergunta:<br>
+<input type="number" id="id">
+<button onclick="excluir()">Excluir</button>
+
+<p id="msg"></p>
+
+<script>
+function excluir(){
+    var id = document.getElementById("id").value;
+    var x = new XMLHttpRequest();
+    x.open("POST","excluirPergunta.php");
+    x.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
+    x.onload = function(){
+        document.getElementById("msg").innerHTML = JSON.parse(x.responseText);
+    }
+    x.send("id="+id);
+}
+</script>
+
+</body>
+</html>
