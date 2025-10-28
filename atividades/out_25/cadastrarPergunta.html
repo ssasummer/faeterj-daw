@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Cadastrar Pergunta</title>
+    <script>
+        function enviarPergunta() {
+            let pergunta = document.getElementById("pergunta").value;
+            let tipo = document.getElementById("tipo").value;
+            let respostas = document.getElementById("respostas").value;
+
+            let dados = "pergunta=" + encodeURIComponent(pergunta) +
+                        "&tipo=" + encodeURIComponent(tipo) +
+                        "&respostas=" + encodeURIComponent(respostas);
+
+            let x = new XMLHttpRequest();
+            x.onreadystatechange = function() {
+                if (this.readyState == 4 && this.status == 200) {
+                    document.getElementById("msg").innerHTML = this.responseText;
+                    document.getElementById("formPergunta").reset();
+                }
+            }
+            x.open("POST", "incluirPergunta.php");
+            x.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+            x.send(dados);
+        }
+    </script>
+</head>
+<body>
+
+<h1>Incluir Pergunta</h1>
+
+<form id="formPergunta" onsubmit="event.preventDefault(); enviarPergunta();">
+    Pergunta:<br>
+    <input type="text" id="pergunta"><br><br>
+
+    Tipo:<br>
+    <select id="tipo">
+        <option value="multipla">Multipla Escolha</option>
+        <option value="texto">Resposta em Texto</option>
+    </select><br><br>
+
+    Respostas:<br>
+    <textarea id="respostas"></textarea><br><br>
+
+    <input type="submit" value="Cadastrar">
+</form>
+
+<p id="msg"></p>
+
+</body>
+</html>
