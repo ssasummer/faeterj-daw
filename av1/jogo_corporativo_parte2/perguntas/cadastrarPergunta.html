@@ -2,60 +2,48 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cadastrar Pergunta</title>
-    <link rel="stylesheet" href="../style.css">
-
     <script>
         function enviarPergunta() {
             let pergunta = document.getElementById("pergunta").value;
             let tipo = document.getElementById("tipo").value;
             let respostas = document.getElementById("respostas").value;
 
-            let dados = "pergunta=" + encodeURIComponent(pergunta) +
-                        "&tipo=" + encodeURIComponent(tipo) +
-                        "&respostas=" + encodeURIComponent(respostas);
+            let dados = {"pergunta": pergunta, "tipo": tipo, "respostas": respostas};
+            let json = JSON.stringify(dados);
 
-            let xmlhttp = new XMLHttpRequest();
-
-            xmlhttp.onreadystatechange = function() {
+            let x = new XMLHttpRequest();
+            x.onreadystatechange = function() {
                 if (this.readyState == 4 && this.status == 200) {
                     document.getElementById("msg").innerHTML = this.responseText;
                     document.getElementById("formPergunta").reset();
                 }
             }
-
-            xmlhttp.open("POST", "salvarPergunta.php");
-            xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-            xmlhttp.send(dados);
+            x.open("POST", "salvarPerguntaJSON.php");
+            x.setRequestHeader("Content-Type", "application/json");
+            x.send(json);
         }
     </script>
 </head>
 <body>
-<div>
-    <h1>Cadastrar Pergunta</h1>
+<h1>Cadastrar Pergunta</h1>
 
-    <form id="formPergunta" onsubmit="event.preventDefault(); enviarPergunta();">
+<form id="formPergunta" onsubmit="event.preventDefault(); enviarPergunta();">
+    Texto da Pergunta:<br>
+    <input type="text" id="pergunta"><br><br>
 
-        Texto da Pergunta:
-        <input type="text" id="pergunta" required><br><br>
+    Tipo:<br>
+    <select id="tipo">
+        <option value="multipla">Multipla Escolha</option>
+        <option value="texto">Resposta em Texto</option>
+    </select><br><br>
 
-        Tipo:
-        <select id="tipo">
-            <option value="multipla">Multipla Escolha</option>
-            <option value="texto">Resposta em Texto</option>
-        </select><br><br>
+    Respostas:<br>
+    <textarea id="respostas"></textarea><br><br>
 
-        Respostas (use | para multipla escolha):
-        <br>
-        <textarea id="respostas"></textarea><br><br>
+    <input type="submit" value="Cadastrar">
+</form>
 
-        <input type="submit" value="Cadastrar">
-    </form>
-
-    <p id="msg"></p>
-
-    <p><a href="../index.php">Voltar ao início</a></p>
-</div>
+<p id="msg"></p>
 </body>
 </html>
