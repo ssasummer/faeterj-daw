@@ -1,30 +1,26 @@
 <?php include 'db.php'; ?>
 <!DOCTYPE html>
 <html>
-  <head>
+  <head>  
     <title>Listar Alunos</title>
   </head>
 <body>
   <h2>Lista de Alunos</h2>
-  <a href="create.php">Adicionar Aluno</a><br><br>
+  <a href="incluir.php">Adicionar Aluno</a><br><br>
   <table border="1" cellpadding="8">
-      <tr>
-        <th>Matrícula</th>
-        <th>Nome</th>
-        <th>Email</th>
-        <th>Ações</th>
-      </tr>
-    <?php
-      $sql = "SELECT * FROM alunos";
-      $result = $conn->query($sql);
-      while($row = $result->fetch_assoc()){ echo "<tr>
-        <td>{$row['matricula']}</td>
-        <td>{$row['nome']}</td>
-        <td>{$row['email']}</td>
-        <td>
-          <a href='view.php?matricula={$row['matricula']}'>Ver</a> | <a href='edit.php?matricula={$row['matricula']}'>Editar</a> | <a href='delete.php?matricula={$row['matricula']}'>Excluir</a></td>
-      </tr>";} 
-    ?>
+    <tr>
+      <th>Matrícula</th><th>Nome</th><th>Email</th><th>Ações</th>
+    </tr>
+  <?php
+    $consulta = "SELECT * FROM alunos";
+    $resultado = $conn->query($consulta);
+    while($linha = $resultado->fetch_assoc()){ echo "<tr>
+      <td>{$linha['matricula']}</td>
+      <td>{$linha['nome']}</td>
+      <td>{$linha['email']}</td>
+      <td><a href='ver.php?matricula={$linha['matricula']}'>Ver</a> | <a href='alterar.php?matricula={$linha['matricula']}'>Editar</a> | <a href='excluir.php?matricula={$linha['matricula']}'>Excluir</a></td>
+    </tr>";} 
+  ?>
   </table>
 </body>
 </html>
