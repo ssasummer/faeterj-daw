@@ -4,13 +4,13 @@
   <head>
     <title>Adicionar Aluno</title>
   </head>
-<body>
-  <h2>Adicionar Aluno</h2>
-  <form method="POST">
-    Matrícula: <input type="text" name="matricula" required><br>
-    Nome: <input type="text" name="nome" required><br>
-    Email: <input type="email" name="email" required><br>
-  <button type="submit">Salvar</button>
-</form>
-</body>
+  <body>
+    <h2>Adicionar Aluno</h2>
+    <form method="POST">
+      Matrícula: <input type="text" name="matricula" required><br>
+      Nome: <input type="text" name="nome" required><br>
+      Email: <input type="email" name="email" required><br>
+      <button type="submit">Salvar</button>
+    </form>
+  </body>
 </html>
