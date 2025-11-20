@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minha Área - Belle & Chic</title>
+    
+    <link rel="stylesheet" href="style.css">
+    
+    <style>
+        /* === ESTILOS ESPECÍFICOS DESTA PÁGINA === */
+        
+        /* Layout de 2 Colunas */
+        .portal-grid {
+            display: grid;
+            grid-template-columns: 1.3fr 0.7fr; /* Esquerda um pouco maior */
+            gap: 30px;
+            margin-top: 30px;
+        }
+        @media (max-width: 768px) {
+            .portal-grid { grid-template-columns: 1fr; }
+        }
+
+        /* Cards Brancos */
+        .card-portal {
+            background: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+
+        /* Passos do Carrinho (Animação suave) */
+        .passo-compra { display: none; animation: slideIn 0.4s ease-out; }
+        .passo-ativo { display: block; }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Destaque de Preço */
+        .price-display {
+            background: #e0f2f1;
+            color: #00796B;
+            padding: 15px;
+            border-radius: 6px;
+            text-align: center;
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin: 20px 0;
+            border: 1px solid #b2dfdb;
+            display: none; /* Aparece via JS */
+        }
+
+        /* Resumo do Pedido (Carrinho) */
+        .cart-summary {
+            background: #fafafa;
+            border: 1px dashed #ccc;
+            padding: 20px;
+            border-radius: 6px;
+            margin-bottom: 25px;
+        }
+        .cart-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            color: #555;
+        }
+        .cart-total {
+            border-top: 1px solid #ddd;
+            margin-top: 10px;
+            padding-top: 10px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #009688;
+            text-align: right;
+        }
+
+        /* Opções de Pagamento Bonitas */
+        .payment-options { display: flex; gap: 15px; margin-bottom: 20px; }
+        .payment-card {
+            flex: 1;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .payment-card:hover { border-color: #009688; background: #f0fdfc; }
+        .payment-card input { margin-right: 5px; }
+        .payment-card.selected { border-color: #009688; background: #e0f2f1; font-weight: bold; color: #00796B; }
+
+        /* Cartão de Crédito Falso */
+        .credit-card-form {
+            background: #f4f4f4;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 15px;
+            border: 1px solid #ddd;
+            display: none;
+        }
+        .card-flex { display: flex; gap: 15px; }
+    </style>
+</head>
+<body>
+
+    <header class="header">
+        <div class="container">
+            <a href="home.html" class="logo">Belle & Chic</a>
+            <nav>
+                <span style="color: #555; margin-right: 15px;">Olá, <strong id="nome-usuario" style="color: #009688;">Cliente</strong></span>
+                <a href="#" onclick="logout()" style="color: #c14b4b; font-weight: 600; font-size: 0.9rem;">Sair</a>
+            </nav>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="portal-grid">
+            
+            <div class="card-portal">
+                
+                <div id="step1" class="passo-compra passo-ativo">
+                    <h2>Novo Agendamento</h2>
+                    <p>Personalize sua experiência conosco.</p>
+                    
+                    <form id="formSelecao">
+                        <label>Escolha o Serviço:</label>
+                        <select id="selectServico" onchange="atualizarPreco()" required>
+                            <option value="">Selecione...</option>
+                        </select>
+
+                        <div id="boxPreco" class="price-display">R$ 0,00</div>
+
+                        <label>Profissional de Preferência:</label>
+                        <select id="selectProfissional" required>
+                            <option value="">Qualquer profissional disponível</option>
+                        </select>
+                        
+                        <label>Data e Horário:</label>
+                        <input type="datetime-local" id="inputData" required>
+                        
+                        <button type="button" onclick="irParaCarrinho()" style="width: 100%; margin-top: 10px;">
+                            Continuar para Pagamento &rarr;
+                        </button>
+                    </form>
+                </div>
+
+                <div id="step2" class="passo-compra">
+                    <h2>Resumo do Pedido</h2>
+                    <p>Confira os dados antes de finalizar.</p>
+
+                    <div class="cart-summary">
+                        <div class="cart-row">
+                            <span>Serviço:</span> <strong id="resumoServico">...</strong>
+                        </div>
+                        <div class="cart-row">
+                            <span>Profissional:</span> <strong id="resumoProfissional">...</strong>
+                        </div>
+                        <div class="cart-row">
+                            <span>Data:</span> <strong id="resumoData">...</strong>
+                        </div>
+                        <div class="cart-total">
+                            Total: <span id="resumoValor">R$ 0,00</span>
+                        </div>
+                    </div>
+
+                    <h3>Pagamento</h3>
+                    <form id="formPagamento">
+                        
+                        <div class="payment-options">
+                            <label class="payment-card" id="cardPix" onclick="selectPgto('pix')">
+                                <input type="radio" name="pgto" value="Pix" required> Pix
+                            </label>
+                            <label class="payment-card" id="cardCartao" onclick="selectPgto('cartao')">
+                                <input type="radio" name="pgto" value="Cartão" required> Cartão
+                            </label>
+                        </div>
+
+                        <div id="areaCartao" class="credit-card-form">
+                            <label style="font-size: 0.8rem; color: #666;">Número do Cartão</label>
+                            <input type="text" placeholder="0000 0000 0000 0000" maxlength="19" style="background: #fff;">
+                            
+                            <div class="card-flex">
+                                <div style="flex:1">
+                                    <label style="font-size: 0.8rem; color: #666;">Validade</label>
+                                    <input type="text" placeholder="MM/AA" maxlength="5" style="background: #fff;">
+                                </div>
+                                <div style="flex:1">
+                                    <label style="font-size: 0.8rem; color: #666;">CVV</label>
+                                    <input type="text" placeholder="123" maxlength="3" style="background: #fff;">
+                                </div>
+                            </div>
+                            <label style="font-size: 0.8rem; color: #666;">Nome no Cartão</label>
+                            <input type="text" placeholder="Como impresso no cartão" style="background: #fff; margin-bottom: 0;">
+                        </div>
+
+                        <br>
+                        <div style="display:flex; gap:10px;">
+                            <button type="button" onclick="voltarStep1()" style="background-color: #ddd; color: #333;">
+                                &larr; Voltar
+                            </button>
+                            <input type="submit" value="Finalizar Agendamento" style="flex:1;">
+                        </div>
+                    </form>
+                    <p id="msg"></p>
+                </div>
+
+            </div>
+
+            <div class="card-portal">
+                <h2 style="font-size: 1.5rem;">Meus Agendamentos</h2>
+                <p style="font-size: 0.9rem; color: #666;">Seu histórico de beleza.</p>
+                
+                <div style="max-height: 500px; overflow-y: auto;">
+                    <table style="font-size: 0.85rem;">
+                        <thead>
+                            <tr>
+                                <th>Serviço</th>
+                                <th>Data</th>
+                                <th>Valor</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabelaMeusAgendamentos">
+                            </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+// === 1. DADOS DE SERVIÇOS ATUALIZADOS (Baseado na página Serviços) ===
+        const servicosDB = [
+            { nome: "Corte & Styling", preco: 80.00 },
+            { nome: "Maquiagem Profissional", preco: 150.00 },
+            { nome: "Spa de Unhas", preco: 60.00 },
+            { nome: "Coloração & Mechas", preco: 200.00 },
+            { nome: "Estética Facial", preco: 120.00 },
+            { nome: "Massoterapia", preco: 100.00 }
+        ];
+        
+        const profissionaisDB = ["Ana Silva", "Carlos Souza", "Mariana Oliveira"];
+
+        let carrinho = {}; 
+
+        // Inicialização
+        window.onload = function() {
+            verificarLogin();
+            popularSelects();
+        };
+
+        function verificarLogin() {
+            fetch('api/check_session.php')
+                .then(res => res.json())
+                .then(data => {
+                    if (!data.logado) window.location.href = 'login_cliente.html';
+                    else {
+                        document.getElementById('nome-usuario').textContent = data.nome;
+                        carregarHistorico();
+                    }
+                });
+        }
+
+        function popularSelects() {
+            const selS = document.getElementById('selectServico');
+            servicosDB.forEach(s => {
+                let opt = document.createElement('option');
+                opt.value = s.nome;
+                opt.dataset.preco = s.preco;
+                opt.text = s.nome;
+                selS.appendChild(opt);
+            });
+
+            const selP = document.getElementById('selectProfissional');
+            profissionaisDB.forEach(p => {
+                let opt = document.createElement('option');
+                opt.value = p;
+                opt.text = p;
+                selP.appendChild(opt);
+            });
+        }
+
+        function atualizarPreco() {
+            const sel = document.getElementById('selectServico');
+            const opt = sel.options[sel.selectedIndex];
+            const box = document.getElementById('boxPreco');
+
+            if (opt.dataset.preco) {
+                box.style.display = 'block';
+                const valor = parseFloat(opt.dataset.preco);
+                box.textContent = valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+            } else {
+                box.style.display = 'none';
+            }
+        }
+
+        // Navegação entre Etapas
+        function irParaCarrinho() {
+            const servico = document.getElementById('selectServico').value;
+            const profissional = document.getElementById('selectProfissional').value;
+            const dataHora = document.getElementById('inputData').value;
+            const sel = document.getElementById('selectServico');
+            const preco = sel.options[sel.selectedIndex]?.dataset.preco;
+
+            if (!servico || !dataHora) {
+                alert("Por favor, selecione o serviço e a data.");
+                return;
+            }
+
+            carrinho = { servico, profissional, data: dataHora, valor: preco };
+
+            // Preenche Resumo
+            document.getElementById('resumoServico').textContent = carrinho.servico;
+            document.getElementById('resumoProfissional').textContent = carrinho.profissional || "Indiferente";
+            document.getElementById('resumoData').textContent = new Date(carrinho.data).toLocaleString('pt-BR');
+            document.getElementById('resumoValor').textContent = parseFloat(carrinho.valor).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+
+            document.getElementById('step1').classList.remove('passo-ativo');
+            document.getElementById('step2').classList.add('passo-ativo');
+        }
+
+        function voltarStep1() {
+            document.getElementById('step2').classList.remove('passo-ativo');
+            document.getElementById('step1').classList.add('passo-ativo');
+        }
+
+        function selectPgto(tipo) {
+            // Visual da seleção
+            document.getElementById('cardPix').classList.remove('selected');
+            document.getElementById('cardCartao').classList.remove('selected');
+            
+            if(tipo === 'pix') {
+                document.getElementById('radioPix').checked = true;
+                document.getElementById('cardPix').classList.add('selected');
+                document.getElementById('areaCartao').style.display = 'none';
+            } else {
+                document.getElementById('radioCartao').checked = true;
+                document.getElementById('cardCartao').classList.add('selected');
+                document.getElementById('areaCartao').style.display = 'block';
+            }
+        }
+
+        // Finalizar Compra
+        document.getElementById('formPagamento').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formaPgto = document.querySelector('input[name="pgto"]:checked').value;
+            const msg = document.getElementById('msg');
+            msg.textContent = "Processando pagamento...";
+            msg.className = 'msg';
+
+            const formData = new FormData();
+            formData.append('servico_desejado', carrinho.servico);
+            formData.append('nome_profissional', carrinho.profissional);
+            formData.append('data_hora_agendamento', carrinho.data);
+            formData.append('valor', carrinho.valor);
+            formData.append('forma_pagamento', formaPgto);
+
+            fetch('api/incluir_agendamento.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.sucesso) {
+                    msg.textContent = "Pagamento Aprovado! Agendamento Confirmado.";
+                    msg.classList.add('sucesso');
+                    carregarHistorico();
+
+                    setTimeout(() => {
+                        msg.className = 'msg'; msg.textContent = '';
+                        document.getElementById('formSelecao').reset();
+                        document.getElementById('formPagamento').reset();
+                        document.getElementById('boxPreco').style.display = 'none';
+                        document.getElementById('areaCartao').style.display = 'none';
+                        // Reseta seleção visual
+                        document.getElementById('cardPix').classList.remove('selected');
+                        document.getElementById('cardCartao').classList.remove('selected');
+                        voltarStep1();
+                    }, 3000);
+                } else {
+                    msg.textContent = data.erro;
+                    msg.classList.add('erro');
+                }
+            })
+            .catch(err => console.error(err));
+        });
+
+        function carregarHistorico() {
+            const tbody = document.getElementById('tabelaMeusAgendamentos');
+            fetch('api/listar_meus_agendamentos.php?t=' + Date.now())
+                .then(res => res.json())
+                .then(data => {
+                    tbody.innerHTML = '';
+                    if (data.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="3">Nenhum agendamento.</td></tr>';
+                        return;
+                    }
+                    data.forEach(ag => {
+                        let val = ag.valor ? parseFloat(ag.valor).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'}) : '-';
+                        tbody.innerHTML += `
+                            <tr>
+                                <td>${ag.servico_desejado}</td>
+                                <td>${ag.data_hora_formatada}</td>
+                                <td style="color:#009688; font-weight:bold;">${val}</td>
+                            </tr>
+                        `;
+                    });
+                });
+        }
+
+        function logout() {
+            fetch('api/logout_cliente.php').then(() => window.location.href = 'home.html');
+        }
+    </script>
+</body>
+</html>
